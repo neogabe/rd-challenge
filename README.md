@@ -33,7 +33,17 @@ cd rd-challenge
 
 ---
 
-### 2. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
+### 2. Configure o Docker Compose
+
+Copie o arquivo de exemplo do Docker Compose:
+
+```bash
+cp docker-compose.example.yml docker-compose.yml
+```
+
+---
+
+### 3. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
 
 ```bash
 docker-compose up -d --build
@@ -53,7 +63,7 @@ docker-compose ps
 
 ---
 
-### 3. Rode as migrations dentro do container
+### 4. Rode as migrations dentro do container
 
 Abra um novo terminal e execute:
 
@@ -63,7 +73,7 @@ docker-compose run web bundle exec rails db:migrate
 
 ---
 
-### 4. (Opcional) Popule o banco com produtos de exemplo
+### 5. (Opcional) Popule o banco com produtos de exemplo
 
 ```bash
 docker-compose run web bundle exec rails console
@@ -73,7 +83,7 @@ exit
 
 ---
 
-### 5. Rode o Sidekiq para processar jobs em background
+### 6. Rode o Sidekiq para processar jobs em background
 
 ```bash
 docker-compose run web bundle exec sidekiq
@@ -81,7 +91,7 @@ docker-compose run web bundle exec sidekiq
 
 ---
 
-### 6. Executando os testes
+### 7. Executando os testes
 
 ```bash
 docker-compose run web bundle exec rails db:test:prepare
