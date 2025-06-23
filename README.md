@@ -33,42 +33,7 @@ cd rd-challenge
 
 ---
 
-### 2. Pare e remova containers antigos (se existirem)
-
-```bash
-docker stop postgres-rd redis-rd 2>/dev/null || true
-docker rm postgres-rd redis-rd 2>/dev/null || true
-```
-
----
-
-### 3. Configure o docker-compose
-
-1. Copie o arquivo de exemplo:
-
-```bash
-cp docker-compose.example.yml docker-compose.yml
-```
-
-2. Gere uma chave secreta:
-
-```bash
-rails secret
-```
-
-E substitua o valor de `SECRET_KEY_BASE` no `docker-compose.yml` pela chave gerada.
-
-3. Altere a senha do PostgreSQL no `docker-compose.yml`:
-
-```yaml
-POSTGRES_PASSWORD: suasenha
-```
-
-Substitua `suasenha` pela senha desejada para o banco de dados.
-
----
-
-### 4. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
+### 2. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
 
 ```bash
 docker-compose up --build
@@ -80,9 +45,11 @@ Aguarde até aparecer a mensagem "Listening on http://0.0.0.0:3000"
 - O banco de dados estará disponível na porta 5432
 - O Redis estará disponível na porta 6379
 
+> **Observação:** Não é necessário alterar a senha do banco de dados. O ambiente já está configurado para funcionar com a senha padrão definida no docker-compose.yml.
+
 ---
 
-### 5. Rode as migrations dentro do container
+### 3. Rode as migrations dentro do container
 
 Abra um novo terminal e execute:
 
@@ -92,7 +59,7 @@ docker-compose run web bundle exec rails db:migrate
 
 ---
 
-### 6. (Opcional) Popule o banco com produtos de exemplo
+### 4. (Opcional) Popule o banco com produtos de exemplo
 
 ```bash
 docker-compose run web bundle exec rails console
@@ -102,7 +69,7 @@ exit
 
 ---
 
-### 7. Rode o Sidekiq para processar jobs em background
+### 5. Rode o Sidekiq para processar jobs em background
 
 ```bash
 docker-compose run web bundle exec sidekiq
@@ -110,7 +77,7 @@ docker-compose run web bundle exec sidekiq
 
 ---
 
-### 8. Executando os testes
+### 6. Executando os testes
 
 ```bash
 docker-compose run web bundle exec rails db:test:prepare
