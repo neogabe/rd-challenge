@@ -36,10 +36,14 @@ cd rd-challenge
 ### 2. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
 
 ```bash
-docker-compose up --build
+docker-compose up -d --build
 ```
 
-Aguarde até aparecer a mensagem "Listening on http://0.0.0.0:3000"
+Aguarde alguns segundos para que todos os serviços iniciem. Você pode verificar o status com:
+
+```bash
+docker-compose ps
+```
 
 - O Rails estará disponível em [http://localhost:3000](http://localhost:3000)
 - O banco de dados estará disponível na porta 5432
