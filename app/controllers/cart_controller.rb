@@ -45,4 +45,34 @@ class CartController < ApplicationController
       total_price: total_price
     }
   end
+  def show
+    #busca o carrinho da sessao pelo id salvo
+    @cart = Cart.find_by(id: session[:cart_id])
+
+    #se nao existir, retorna um erro
+    unless @cart
+      return render json: { error: "Carrinho não encontrado" }, status: :not_found
+    end
+
+    #monta a lista de produtos do carrinho
+    products = @cart.cart_items.includes(:product).map do |item|
+      {
+        id: item.product.id,
+        name: item.product.name,
+        quantity: item.quantity,
+        unit_price: item.product.unit_price.to_f,
+        total_price: (item.product.unit_price.to_f * item.quantity).to_f
+      }
+    end
+
+    #soma o valor total do carrinho
+    total_price = products.sum { |p| p[:total_price] }
+
+    #retorna o payload
+    render json: {
+      id: @cart.id,
+      products: products,
+      total_price: total_price
+    }
+  end
 end

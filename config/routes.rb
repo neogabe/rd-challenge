@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   post '/cart', to: 'cart#create'
+  get '/cart', to: 'cart#show'
 end
