@@ -120,4 +120,47 @@ class CartController < ApplicationController
       total_price: total_price
     }
   end
+
+  def destroy
+    @cart = Cart.find_by(id: session[:cart_id])
+
+    unless @cart
+      return render json: { error: "Carrinho não encontrado" }, status: not_found
+    end
+
+    #pega o product_id da rota
+    product_id = params[:product_id]
+
+    #busca o item do carrinho pelo product_id
+    cart_item = @cart.cart_items.find_by(product_id: product_id)
+
+    #se o produto nao estiver no carrinho, retorna o erro
+    unless cart_item
+      return render json: { error: "Produto não está no carrinho" }, status: not_found
+    end
+
+    #deleta o item do carrinho
+    cart_item.destroy
+
+    #monta a lista de produtos restantes no carrinho
+    products = @cart.cart_items.includes(:product).map do |item|
+      {
+        id: item.product.id,
+        name: item.product.name,
+        quantity: item.quantity,
+        unit_price: item.product.unit_price.to_f,
+        total_price: (item.product.unit_price.to_f * item.quantity).to_f
+      }
+    end
+
+    #calcula o total do carrinho
+    total_price = products.sum { |p| p[:total_price] }
+
+    #retorna o payload
+    render json: {
+      id: @cart.id,
+      products: products,
+      total_price: total_price
+    }
+  end
 end
