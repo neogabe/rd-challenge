@@ -23,8 +23,8 @@ development:
   <<: *default
   database: rd_challenge_development
   username: postgres
-  password: d01der4
-  host: localhost
+  password: suasenha
+  host: db
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.

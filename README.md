@@ -24,86 +24,80 @@ https://docs.google.com/document/d/1QzSduQU6qfRCEhoyPvKkL0ulS2OMxr83EOCv_W3_7gg/
 
 ---
 
+### Configuração do docker-compose
+
+1. Copie o arquivo de exemplo:
+
+```bash
+cp docker-compose.example.yml docker-compose.yml
+```
+
+2. Gere uma chave secreta:
+
+```bash
+rails secret
+```
+
+E substitua o valor de `SECRET_KEY_BASE` no `docker-compose.yml` pela chave gerada.
+
+> **Atenção:** Não versionar o arquivo `docker-compose.yml`. Use sempre o arquivo de exemplo para compartilhar a configuração.
+
+---
+
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/SEU_USUARIO/rd-challenge.git
+git clone https://github.com/neogabe/rd-challenge.git
 cd rd-challenge
 ```
 
 ---
 
-### 2. Suba os containers do PostgreSQL e Redis
+### 2. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
 
 ```bash
-docker run --name postgres-rd -e POSTGRES_PASSWORD=suasenha -p 5432:5432 -d postgres:16
-docker run --name redis-rd -p 6379:6379 -d redis:7.0.15
+docker-compose up --build
+```
+
+- O Rails estará disponível em [http://localhost:3000](http://localhost:3000)
+- O banco de dados estará disponível na porta 5432
+- O Redis estará disponível na porta 6379
+
+---
+
+### 3. Rode as migrations dentro do container
+
+Abra um novo terminal e execute:
+
+```bash
+docker-compose run web rails db:migrate
 ```
 
 ---
 
-### 3. Instale as dependências do projeto
+### 4. (Opcional) Popule o banco com produtos de exemplo
 
 ```bash
-bundle install
-```
-
----
-
-### 4. Configure o banco de dados
-
-Edite o arquivo `config/database.yml` se necessário, usando:
-
-```yaml
-username: postgres
-password: suasenha
-host: localhost
-```
-
----
-
-### 5. Crie e migre o banco de dados
-
-```bash
-rails db:create
-rails db:migrate
-```
-
----
-
-### 6. (Opcional) Popule o banco com produtos de exemplo
-
-```bash
-rails console
+docker-compose run web rails console
 Product.create(name: "Produto Teste", unit_price: 10.0)
 exit
 ```
 
 ---
 
-### 7. Rode o servidor Rails
+### 5. Rode o Sidekiq para processar jobs em background
 
 ```bash
-rails server
-```
-
-A API estará disponível em [http://localhost:3000](http://localhost:3000)
-
----
-
-### 8. Rode o Sidekiq (em outro terminal)
-
-```bash
-bundle exec sidekiq
+docker-compose run web bundle exec sidekiq
 ```
 
 ---
 
-### 9. Executando os testes
+### 6. Executando os testes
 
 ```bash
-rails db:test:prepare
-bundle exec rspec
+docker-compose run web rails db:test:prepare
+docker-compose run web bundle exec rspec
 ```
 
 ---
@@ -120,6 +114,7 @@ bundle exec rspec
 ## Observações
 
 - O projeto utiliza session para identificar o carrinho do usuário.
-- O controle de carrinhos abandonados é feito via job com Sidekiq.
+- O controle de carrinhos abandonados é feito via job com Sidekiq e agendamento automático com sidekiq-cron.
+- O setup com Docker Compose facilita a execução do projeto em qualquer ambiente.
 
 ---
