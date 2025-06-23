@@ -1,0 +1,5 @@
+:schedule:
+  abandoned_carts_job:
+    cron: "0 * * * *"
+    class: "AbandonedCartsJob"
+    queue: default
