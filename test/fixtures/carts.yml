@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  abandoned: false
+  abandoned_at: 2025-06-23 10:58:13
+
+two:
+  abandoned: false
+  abandoned_at: 2025-06-23 10:58:13
