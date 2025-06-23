@@ -33,7 +33,16 @@ cd rd-challenge
 
 ---
 
-### 2. Configuração do docker-compose
+### 2. Pare e remova containers antigos (se existirem)
+
+```bash
+docker stop postgres-rd redis-rd 2>/dev/null || true
+docker rm postgres-rd redis-rd 2>/dev/null || true
+```
+
+---
+
+### 3. Configure o docker-compose
 
 1. Copie o arquivo de exemplo:
 
@@ -49,13 +58,23 @@ rails secret
 
 E substitua o valor de `SECRET_KEY_BASE` no `docker-compose.yml` pela chave gerada.
 
+3. Altere a senha do PostgreSQL no `docker-compose.yml`:
+
+```yaml
+POSTGRES_PASSWORD: suasenha
+```
+
+Substitua `suasenha` pela senha desejada para o banco de dados.
+
 ---
 
-### 3. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
+### 4. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
 
 ```bash
 docker-compose up --build
 ```
+
+Aguarde até aparecer a mensagem "Listening on http://0.0.0.0:3000"
 
 - O Rails estará disponível em [http://localhost:3000](http://localhost:3000)
 - O banco de dados estará disponível na porta 5432
@@ -63,27 +82,27 @@ docker-compose up --build
 
 ---
 
-### 4. Rode as migrations dentro do container
+### 5. Rode as migrations dentro do container
 
 Abra um novo terminal e execute:
 
 ```bash
-docker-compose run web rails db:migrate
+docker-compose run web bundle exec rails db:migrate
 ```
 
 ---
 
-### 5. (Opcional) Popule o banco com produtos de exemplo
+### 6. (Opcional) Popule o banco com produtos de exemplo
 
 ```bash
-docker-compose run web rails console
+docker-compose run web bundle exec rails console
 Product.create(name: "Produto Teste", unit_price: 10.0)
 exit
 ```
 
 ---
 
-### 6. Rode o Sidekiq para processar jobs em background
+### 7. Rode o Sidekiq para processar jobs em background
 
 ```bash
 docker-compose run web bundle exec sidekiq
@@ -91,10 +110,10 @@ docker-compose run web bundle exec sidekiq
 
 ---
 
-### 7. Executando os testes
+### 8. Executando os testes
 
 ```bash
-docker-compose run web rails db:test:prepare
+docker-compose run web bundle exec rails db:test:prepare
 docker-compose run web bundle exec rspec
 ```
 
