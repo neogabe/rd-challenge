@@ -1,11 +1,14 @@
 # RD Station Challenge - Carrinho de Compras
 
-Este projeto é um desafio técnico para a vaga de desenvolvedor backend júnior na RD Station, desenvolvido em Ruby on Rails, com uma API para gerenciamento de carrinho de compras.
+Este projeto é um desafio técnico para a vaga de Desenvolvedor Backend Júnior na RD Station. Foi desenvolvido em Ruby on Rails e consiste em uma API para gerenciamento de carrinho de compras.
+
+O desafio foi implementado conforme o documento fornecido:
+https://docs.google.com/document/d/1QzSduQU6qfRCEhoyPvKkL0ulS2OMxr83EOCv_W3_7gg/edit?tab=t.0
 
 ## Tecnologias utilizadas
 
-- Ruby 3.3.1
-- Rails 7.1.3.2
+- Ruby 3.3.7
+- Rails 8.0.2
 - PostgreSQL 16 (via Docker)
 - Redis 7.0.15 (via Docker)
 - Sidekiq
