@@ -24,7 +24,16 @@ https://docs.google.com/document/d/1QzSduQU6qfRCEhoyPvKkL0ulS2OMxr83EOCv_W3_7gg/
 
 ---
 
-### Configuração do docker-compose
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/neogabe/rd-challenge.git
+cd rd-challenge
+```
+
+---
+
+### 2. Configuração do docker-compose
 
 1. Copie o arquivo de exemplo:
 
@@ -40,20 +49,9 @@ rails secret
 
 E substitua o valor de `SECRET_KEY_BASE` no `docker-compose.yml` pela chave gerada.
 
-> **Atenção:** Não versionar o arquivo `docker-compose.yml`. Use sempre o arquivo de exemplo para compartilhar a configuração.
-
 ---
 
-### 1. Clone o repositório
-
-```bash
-git clone https://github.com/neogabe/rd-challenge.git
-cd rd-challenge
-```
-
----
-
-### 2. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
+### 3. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
 
 ```bash
 docker-compose up --build
@@ -65,7 +63,7 @@ docker-compose up --build
 
 ---
 
-### 3. Rode as migrations dentro do container
+### 4. Rode as migrations dentro do container
 
 Abra um novo terminal e execute:
 
@@ -75,7 +73,7 @@ docker-compose run web rails db:migrate
 
 ---
 
-### 4. (Opcional) Popule o banco com produtos de exemplo
+### 5. (Opcional) Popule o banco com produtos de exemplo
 
 ```bash
 docker-compose run web rails console
@@ -85,7 +83,7 @@ exit
 
 ---
 
-### 5. Rode o Sidekiq para processar jobs em background
+### 6. Rode o Sidekiq para processar jobs em background
 
 ```bash
 docker-compose run web bundle exec sidekiq
@@ -93,7 +91,7 @@ docker-compose run web bundle exec sidekiq
 
 ---
 
-### 6. Executando os testes
+### 7. Executando os testes
 
 ```bash
 docker-compose run web rails db:test:prepare
