@@ -11,6 +11,11 @@ class CartController < ApplicationController
     product_id = params[:product_id]
     quantity = params[:quantity]
 
+    #validar se a quantidade é positiva
+    if quantity.to_i <= 0
+      return render json: { error: "Quantidade deve ser maior que zero" }, status: :unprocessable_entity
+    end
+
     #buscar o produtio
     product = Product.find_by(id: product_id)
     return render json: { error: "Produto não encontrado" }, status: :not_found unless product
@@ -89,6 +94,11 @@ class CartController < ApplicationController
     #pega os parametros do payload
     product_id = params[:product_id]
     quantity = params[:quantity].to_i
+
+    #validar se a quantidade é positiva
+    if quantity <= 0
+      return render json: { error: "Quantidade deve ser maior que zero" }, status: :unprocessable_entity
+    end
 
     #busca o item do carrinho pelo product_id
     cart_item = @cart.cart_items.find_by(product_id: product_id)

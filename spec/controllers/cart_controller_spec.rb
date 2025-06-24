@@ -13,6 +13,22 @@ RSpec.describe CartController, type: :controller do
       expect(json["products"].first["quantity"]).to eq(2)
       expect(json["total_price"]).to eq(20.0)
     end
+
+    it "rejeita quantidade zero" do
+      post :create, params: { product_id: product.id, quantity: 0 }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      json = JSON.parse(response.body)
+      expect(json["error"]).to eq("Quantidade deve ser maior que zero")
+    end
+
+    it "rejeita quantidade negativa" do
+      post :create, params: { product_id: product.id, quantity: -1 }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      json = JSON.parse(response.body)
+      expect(json["error"]).to eq("Quantidade deve ser maior que zero")
+    end
   end
 
   describe "GET #show" do
@@ -42,6 +58,24 @@ RSpec.describe CartController, type: :controller do
       json = JSON.parse(response.body)
       expect(json["products"].first["quantity"]).to eq(5)
       expect(json["total_price"]).to eq(50.0)
+    end
+
+    it "rejeita quantidade zero no add_item" do
+      post :create, params: { product_id: product.id, quantity: 2 }
+      post :add_item, params: { product_id: product.id, quantity: 0 }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      json = JSON.parse(response.body)
+      expect(json["error"]).to eq("Quantidade deve ser maior que zero")
+    end
+
+    it "rejeita quantidade negativa no add_item" do
+      post :create, params: { product_id: product.id, quantity: 2 }
+      post :add_item, params: { product_id: product.id, quantity: -1 }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      json = JSON.parse(response.body)
+      expect(json["error"]).to eq("Quantidade deve ser maior que zero")
     end
   end
 
