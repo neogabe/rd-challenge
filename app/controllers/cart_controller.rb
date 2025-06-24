@@ -1,176 +1,70 @@
 class CartController < ApplicationController
+  include CartSession
+  
+  before_action :find_cart, except: [:create]
+  before_action :validate_quantity, only: [:create, :update_item]
+
   def create
-    @cart = Cart.find_by(id: session[:cart_id])
+    create_cart_if_needed
 
-    unless @cart
-      @cart = Cart.create(abandoned: false)
-      session[:cart_id] = @cart.id
-    end
-
-    #pegar os parametros do payload
-    product_id = params[:product_id]
-    quantity = params[:quantity]
-
-    #validar se a quantidade é positiva
-    if quantity.to_i <= 0
-      return render json: { error: "Quantidade deve ser maior que zero" }, status: :unprocessable_entity
-    end
-
-    #buscar o produtio
-    product = Product.find_by(id: product_id)
-    return render json: { error: "Produto não encontrado" }, status: :not_found unless product
-
-    #verificar se o produto já está no carrinho
-    cart_item = @cart.cart_items.find_by(product_id: product_id)
-    if cart_item
-      cart_item.quantity += quantity
-      cart_item.save
-    else
-      @cart.cart_items.create(product: product, quantity: quantity)
-    end
-
-    #monta a lista de produtos do carrinho
-    products = @cart.cart_items.includes(:product).map do |item|
-      {
-        id: item.product.id,
-        name: item.product.name,
-        quantity: item.quantity,
-        unit_price: item.product.unit_price.to_f,
-        total_price: (item.product.unit_price.to_f * item.quantity).to_f
-      }
-    end
-
-    #calcula o total do carrinho
-    total_price = products.sum { |p| p[:total_price] }
-
-    #retorna o payload
-    render json: {
-      id: @cart.id,
-      products: products,
-      total_price: total_price
-    }
-  end
-  def show
-    #busca o carrinho da sessao pelo id salvo
-    @cart = Cart.find_by(id: session[:cart_id])
-
-    #se nao existir, retorna um erro
-    unless @cart
-      return render json: { error: "Carrinho não encontrado" }, status: :not_found
-    end
-
-    #monta a lista de produtos do carrinho
-    products = @cart.cart_items.includes(:product).map do |item|
-      {
-        id: item.product.id,
-        name: item.product.name,
-        quantity: item.quantity,
-        unit_price: item.product.unit_price.to_f,
-        total_price: (item.product.unit_price.to_f * item.quantity).to_f
-      }
-    end
-
-    #soma o valor total do carrinho
-    total_price = products.sum { |p| p[:total_price] }
-
-    #retorna o payload
-    render json: {
-      id: @cart.id,
-      products: products,
-      total_price: total_price
-    }
-  end
-
-  def add_item
-    
-    #busca o carrinho da sessao
-    @cart = Cart.find_by(id: session[:cart_id])
-
-    #se nao existir, retorna o erro
-    unless @cart
-      return render json: { error: "Carrinho não encontrado" }, status: :not_found
-    end
-
-    #pega os parametros do payload
     product_id = params[:product_id]
     quantity = params[:quantity].to_i
 
-    #validar se a quantidade é positiva
-    if quantity <= 0
-      return render json: { error: "Quantidade deve ser maior que zero" }, status: :unprocessable_entity
+    service = CartService.new(@cart)
+    result = service.add_product(product_id, quantity)
+
+    if result[:success]
+      render json: service.to_json
+    else
+      render json: { error: result[:error] }, status: :unprocessable_entity
     end
+  end
 
-    #busca o item do carrinho pelo product_id
-    cart_item = @cart.cart_items.find_by(product_id: product_id)
-    unless cart_item
-      return render json: { error: "Produto não está no carrinho" }, status: :not_found
+  def show
+    service = CartService.new(@cart)
+    render json: service.to_json
+  end
+
+  def update_item
+    product_id = params[:product_id]
+    quantity = params[:quantity].to_i
+
+    service = CartService.new(@cart)
+    result = service.update_product_quantity(product_id, quantity)
+
+    if result[:success]
+      render json: service.to_json
+    else
+      render json: { error: result[:error] }, status: :unprocessable_entity
     end
-
-    #atualiza a quantidade do item
-    cart_item.update(quantity: quantity)
-
-    #monta a lista de produtos do carrinho
-    products = @cart.cart_items.includes(:product).map do |item|
-      {
-        id: item.product.id,
-        name: item.product.name,
-        quantity: item.quantity,
-        unit_price: item.product.unit_price.to_f,
-        total_price: (item.product.unit_price.to_f * item.quantity).to_f
-      }
-    end
-
-    #calcula o total do carrinho
-    total_price = products.sum { |p| p[:total_price] }
-
-    #retorna o payload atualizado
-    render json: {
-      id: @cart.id,
-      products: products,
-      total_price: total_price
-    }
   end
 
   def destroy
-    @cart = Cart.find_by(id: session[:cart_id])
-
-    unless @cart
-      return render json: { error: "Carrinho não encontrado" }, status: not_found
-    end
-
-    #pega o product_id da rota
     product_id = params[:product_id]
 
-    #busca o item do carrinho pelo product_id
-    cart_item = @cart.cart_items.find_by(product_id: product_id)
+    service = CartService.new(@cart)
+    result = service.remove_product(product_id)
 
-    #se o produto nao estiver no carrinho, retorna o erro
-    unless cart_item
-      return render json: { error: "Produto não está no carrinho" }, status: not_found
+    if result[:success]
+      render json: service.to_json
+    else
+      render json: { error: result[:error] }, status: :not_found
     end
+  end
 
-    #deleta o item do carrinho
-    cart_item.destroy
+  private
 
-    #monta a lista de produtos restantes no carrinho
-    products = @cart.cart_items.includes(:product).map do |item|
-      {
-        id: item.product.id,
-        name: item.product.name,
-        quantity: item.quantity,
-        unit_price: item.product.unit_price.to_f,
-        total_price: (item.product.unit_price.to_f * item.quantity).to_f
-      }
+  def find_cart
+    @cart = Cart.find_by(id: session[:cart_id])
+    unless @cart
+      render json: { error: "Carrinho não encontrado" }, status: :not_found
     end
+  end
 
-    #calcula o total do carrinho
-    total_price = products.sum { |p| p[:total_price] }
-
-    #retorna o payload
-    render json: {
-      id: @cart.id,
-      products: products,
-      total_price: total_price
-    }
+  def validate_quantity
+    quantity = params[:quantity].to_i
+    if quantity <= 0
+      render json: { error: "Quantidade deve ser maior que zero" }, status: :unprocessable_entity
+    end
   end
 end

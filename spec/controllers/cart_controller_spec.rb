@@ -35,7 +35,6 @@ RSpec.describe CartController, type: :controller do
     let!(:product) { Product.create(name: "Produto Teste", unit_price: 10.0) }
 
     it "retorna os itens do carrinho corretamente" do
-      #add um produto ao carrinho via POST
       post :create, params: { product_id: product.id, quantity: 2 }
       get :show
 
@@ -47,12 +46,12 @@ RSpec.describe CartController, type: :controller do
     end
   end
 
-  describe "POST #add_item" do
+  describe "PATCH #update_item" do
     let!(:product) { Product.create(name: "Produto Teste", unit_price: 10.0) }
 
     it "altera a quantidade de um produto no carrinho" do
       post :create, params: { product_id: product.id, quantity: 2 }
-      post :add_item, params: { product_id: product.id, quantity: 5 }
+      patch :update_item, params: { product_id: product.id, quantity: 5 }
 
       expect(response).to have_http_status(:success)
       json = JSON.parse(response.body)
@@ -60,18 +59,18 @@ RSpec.describe CartController, type: :controller do
       expect(json["total_price"]).to eq(50.0)
     end
 
-    it "rejeita quantidade zero no add_item" do
+    it "rejeita quantidade zero no update_item" do
       post :create, params: { product_id: product.id, quantity: 2 }
-      post :add_item, params: { product_id: product.id, quantity: 0 }
+      patch :update_item, params: { product_id: product.id, quantity: 0 }
 
       expect(response).to have_http_status(:unprocessable_entity)
       json = JSON.parse(response.body)
       expect(json["error"]).to eq("Quantidade deve ser maior que zero")
     end
 
-    it "rejeita quantidade negativa no add_item" do
+    it "rejeita quantidade negativa no update_item" do
       post :create, params: { product_id: product.id, quantity: 2 }
-      post :add_item, params: { product_id: product.id, quantity: -1 }
+      patch :update_item, params: { product_id: product.id, quantity: -1 }
 
       expect(response).to have_http_status(:unprocessable_entity)
       json = JSON.parse(response.body)
@@ -92,4 +91,4 @@ RSpec.describe CartController, type: :controller do
       expect(json["total_price"]).to eq(0)
     end
   end
-end
+end 
