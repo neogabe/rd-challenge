@@ -42,15 +42,7 @@ docker rm postgres-rd redis-rd
 
 ---
 
-### 3. Configure o docker-compose
-
-1. Copie o arquivo de exemplo:
-
-```bash
-cp docker-compose.example.yml docker-compose.yml
-```
-
-### 4. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
+### 3. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
 
 ```bash
 docker-compose up --build
@@ -64,7 +56,7 @@ Aguarde até aparecer a mensagem "Listening on http://0.0.0.0:3000"
 
 ---
 
-### 5. Rode as migrations dentro do container
+### 4. Rode as migrations dentro do container
 
 Abra um novo terminal e execute:
 
@@ -74,7 +66,7 @@ docker-compose run web bundle exec rails db:migrate
 
 ---
 
-### 6. (Opcional) Popule o banco com produtos de exemplo
+### 5. (Opcional) Popule o banco com produtos de exemplo
 
 ```bash
 docker-compose run web bundle exec rails console
@@ -84,7 +76,7 @@ exit
 
 ---
 
-### 7. Rode o Sidekiq para processar jobs em background
+### 6. Rode o Sidekiq para processar jobs em background
 
 ```bash
 docker-compose run web bundle exec sidekiq
@@ -92,7 +84,7 @@ docker-compose run web bundle exec sidekiq
 
 ---
 
-### 8. Executando os testes
+### 7. Executando os testes
 
 ```bash
 docker-compose run web bundle exec rails db:test:prepare
