@@ -95,12 +95,6 @@ docker-compose run web bundle exec rspec
 
 ## Endpoints da API
 
-### Health Check
-
-- `GET /up` - Verifica o status de saúde da aplicação
-
-### Carrinho de Compras
-
 #### 1. Criar carrinho e adicionar produto
 
 - **POST** `/cart`
@@ -112,8 +106,6 @@ docker-compose run web bundle exec rspec
     "quantity": 2
   }
   ```
-- **Resposta de sucesso** (200):
-  ```
 
 #### 2. Visualizar carrinho
 
@@ -121,7 +113,6 @@ docker-compose run web bundle exec rspec
 - **Descrição**: Retorna os itens do carrinho atual
 - **Resposta de sucesso** (200):
   
-  ```
 - **Resposta de sucesso** (200): Mesmo formato do carrinho atualizado
 - **Resposta de erro** (422): `{"error": "Quantidade deve ser maior que zero"}`
 
@@ -131,20 +122,6 @@ docker-compose run web bundle exec rspec
 - **Descrição**: Remove um produto específico do carrinho
 - **Resposta de sucesso** (200): Carrinho atualizado sem o produto
 - **Resposta de erro** (404): `{"error": "Produto não encontrado no carrinho"}`
-
-### Exemplos de uso no Postman
-
-#### Configuração base:
-
-- **Base URL**: `http://localhost:3000`
-- **Headers**: `Content-Type: application/json`
-
-#### Sequência de testes:
-
-1. **Criar carrinho**: POST `/cart` com `{"product_id": 1, "quantity": 2}`
-2. **Ver carrinho**: GET `/cart`
-3. **Atualizar produto**: PATCH `/cart/1` com `{"quantity": 5}`
-4. **Remover produto**: DELETE `/cart/1`
 
 ---
 
