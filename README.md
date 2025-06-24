@@ -95,33 +95,10 @@ docker-compose run web bundle exec rspec
 
 ## Endpoints da API
 
-#### 1. Criar carrinho e adicionar produto
-
-- **POST** `/cart`
-- **Descrição**: Cria um novo carrinho (se não existir) e adiciona um produto
-- **Parâmetros**:
-  ```json
-  {
-    "product_id": 1,
-    "quantity": 2
-  }
-  ```
-
-#### 2. Visualizar carrinho
-
-- **GET** `/cart`
-- **Descrição**: Retorna os itens do carrinho atual
-- **Resposta de sucesso** (200):
-  
-- **Resposta de sucesso** (200): Mesmo formato do carrinho atualizado
-- **Resposta de erro** (422): `{"error": "Quantidade deve ser maior que zero"}`
-
-#### 4. Remover produto do carrinho
-
-- **DELETE** `/cart/:product_id`
-- **Descrição**: Remove um produto específico do carrinho
-- **Resposta de sucesso** (200): Carrinho atualizado sem o produto
-- **Resposta de erro** (404): `{"error": "Produto não encontrado no carrinho"}`
+1. **Criar carrinho**: POST `/cart` com `{"product_id": 1, "quantity": 2}`
+2. **Ver carrinho**: GET `/cart`
+3. **Atualizar produto**: PATCH `/cart/1` com `{"quantity": 5}`
+4. **Remover produto**: DELETE `/cart/1`
 
 ---
 
