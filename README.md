@@ -93,12 +93,93 @@ docker-compose run web bundle exec rspec
 
 ---
 
-## Endpoints principais
+## Endpoints da API
 
-- `POST /cart` - Adiciona produto ao carrinho
-- `GET /cart` - Lista os itens do carrinho
-- `POST /cart/add_item` - Altera a quantidade de um produto no carrinho
-- `DELETE /cart/:product_id` - Remove um produto do carrinho
+### Health Check
+
+- `GET /up` - Verifica o status de saúde da aplicação
+
+### Carrinho de Compras
+
+#### 1. Criar carrinho e adicionar produto
+
+- **POST** `/cart`
+- **Descrição**: Cria um novo carrinho (se não existir) e adiciona um produto
+- **Parâmetros**:
+  ```json
+  {
+    "product_id": 1,
+    "quantity": 2
+  }
+  ```
+- **Resposta de sucesso** (200):
+  ```json
+  {
+    "cart": {
+      "id": 1,
+      "items": [
+        {
+          "product_id": 1,
+          "product_name": "Produto Teste",
+          "quantity": 2,
+          "unit_price": "10.0",
+          "total_price": "20.0"
+        }
+      ],
+      "total": "20.0"
+    }
+  }
+  ```
+
+#### 2. Visualizar carrinho
+
+- **GET** `/cart`
+- **Descrição**: Retorna os itens do carrinho atual
+- **Resposta de sucesso** (200):
+  ```json
+  {
+    "cart": {
+      "id": 1,
+      "items": [...],
+      "total": "20.0"
+    }
+  }
+  ```
+- **Resposta de erro** (404): `{"error": "Carrinho não encontrado"}`
+
+#### 3. Atualizar quantidade de produto
+
+- **PATCH** `/cart/:product_id`
+- **Descrição**: Atualiza a quantidade de um produto específico no carrinho
+- **Parâmetros**:
+  ```json
+  {
+    "quantity": 3
+  }
+  ```
+- **Resposta de sucesso** (200): Mesmo formato do carrinho atualizado
+- **Resposta de erro** (422): `{"error": "Quantidade deve ser maior que zero"}`
+
+#### 4. Remover produto do carrinho
+
+- **DELETE** `/cart/:product_id`
+- **Descrição**: Remove um produto específico do carrinho
+- **Resposta de sucesso** (200): Carrinho atualizado sem o produto
+- **Resposta de erro** (404): `{"error": "Produto não encontrado no carrinho"}`
+
+### Exemplos de uso no Postman
+
+#### Configuração base:
+
+- **Base URL**: `http://localhost:3000`
+- **Headers**: `Content-Type: application/json`
+
+#### Sequência de testes:
+
+1. **Criar carrinho**: POST `/cart` com `{"product_id": 1, "quantity": 2}`
+2. **Ver carrinho**: GET `/cart`
+3. **Atualizar produto**: PATCH `/cart/1` com `{"quantity": 5}`
+4. **Remover produto**: DELETE `/cart/1`
 
 ---
 
@@ -107,5 +188,7 @@ docker-compose run web bundle exec rspec
 - O projeto utiliza session para identificar o carrinho do usuário.
 - O controle de carrinhos abandonados é feito via job com Sidekiq e agendamento automático com sidekiq-cron.
 - O setup com Docker Compose facilita a execução do projeto em qualquer ambiente.
+- Todos os endpoints retornam JSON e utilizam códigos de status HTTP apropriados.
+- Validações incluem verificação de quantidade positiva e existência de produtos.
 
 ---
