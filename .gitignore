@@ -48,5 +48,3 @@ tmp/*
 
 # Ignore vendor
 /vendor/bundle
-
-docker-compose.yml
