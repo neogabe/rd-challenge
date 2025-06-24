@@ -50,14 +50,6 @@ docker rm postgres-rd redis-rd
 cp docker-compose.example.yml docker-compose.yml
 ```
 
-2. Gere uma chave secreta:
-
-```bash
-rails secret
-```
-
-E substitua o valor de `SECRET_KEY_BASE` no `docker-compose.yml` pela chave gerada.
-
 ### 4. Suba todos os serviços (Rails, PostgreSQL, Redis) com Docker Compose
 
 ```bash
