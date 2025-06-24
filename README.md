@@ -113,22 +113,6 @@ docker-compose run web bundle exec rspec
   }
   ```
 - **Resposta de sucesso** (200):
-  ```json
-  {
-    "cart": {
-      "id": 1,
-      "items": [
-        {
-          "product_id": 1,
-          "product_name": "Produto Teste",
-          "quantity": 2,
-          "unit_price": "10.0",
-          "total_price": "20.0"
-        }
-      ],
-      "total": "20.0"
-    }
-  }
   ```
 
 #### 2. Visualizar carrinho
@@ -136,26 +120,7 @@ docker-compose run web bundle exec rspec
 - **GET** `/cart`
 - **Descrição**: Retorna os itens do carrinho atual
 - **Resposta de sucesso** (200):
-  ```json
-  {
-    "cart": {
-      "id": 1,
-      "items": [...],
-      "total": "20.0"
-    }
-  }
-  ```
-- **Resposta de erro** (404): `{"error": "Carrinho não encontrado"}`
-
-#### 3. Atualizar quantidade de produto
-
-- **PATCH** `/cart/:product_id`
-- **Descrição**: Atualiza a quantidade de um produto específico no carrinho
-- **Parâmetros**:
-  ```json
-  {
-    "quantity": 3
-  }
+  
   ```
 - **Resposta de sucesso** (200): Mesmo formato do carrinho atualizado
 - **Resposta de erro** (422): `{"error": "Quantidade deve ser maior que zero"}`
